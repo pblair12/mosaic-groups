@@ -1,4 +1,4 @@
-angular.module('app', ['ngResource', 'ngRoute', 'ui.bootstrap', 'ngTable', 'checklist-model', 'angularjs-dropdown-multiselect']);
+angular.module('app', ['ngResource', 'ngRoute', 'ui.bootstrap', 'ngTable', 'checklist-model', 'angularjs-dropdown-multiselect', 'ngSanitize']);
 
 angular.module('app').config(function($routeProvider, $locationProvider) {
   var routeRoleChecks = {

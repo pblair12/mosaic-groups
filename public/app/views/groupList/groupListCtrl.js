@@ -11,6 +11,21 @@ angular.module('app').controller('groupListCtrl', function ($scope, $window, $lo
     $scope.daysOfTheWeek.unshift("");
     $scope.dayOfTheWeekFilter = [];
 
+    $scope.moreInfoSections = [{
+        label: 'Host',
+        details: 'Hey! Not ready to lead a group, but you\'ve got space to host one? Awesome! Let us know by emailing <a href="mailto:jessica@mosaicchristian.org"> jessica@mosaicchristian.org</a>'
+    },
+    {
+        label: 'Lead',
+        details: 'Hey! Interested in leading a growth group? Awesome! Fill out the application here: <br />' +
+        '<a href="https://www.mosaicchristian.org/leadagroup"> www.mosaicchristian.org/leadagroup </a>' +
+        '<br />We\'re looking forward to hearing from you!'
+    },
+    {
+        label: 'Childcare',
+        details: 'Hey! Looking to make some extra cash on the side? Join our team of background checked babysitters, and help make it possible for parents to connect each and every semester! Let us know by emailing <a href="mailto:jessica@mosaicchristian.org"> jessica@mosaicchristian.org</a>'
+    }];
+
     $scope.openFilter = false;
 
     //populate the filter with all current days
@@ -335,6 +350,32 @@ angular.module('app').controller('groupListCtrl', function ($scope, $window, $lo
         .then(function (name) {
             $scope.semesterName = name;
         });
+
+    $scope.moreInfo = function (info) {
+        $modal.open({
+            template: '<div>' +
+            '<div class="modal-header"><h3>{{info.label}}</h3></div>' +
+            '<div class="modal-body" ng-bind-html="info.details"></div>' +
+            '<div class="modal-footer"><button class="btn" ng-click="ok()">Ok</button></div>' +
+            '</div>',
+            controller: function ($scope, $modalInstance, $sanitize) {
+                $scope.info = info;
+
+                $scope.ok = function () {
+                    $modalInstance.close();
+                };
+            },
+            resolve: {
+                group: function () {
+                    return $scope.group;
+                },
+                memberToRemove: function () {
+                    return $scope.memberToRemove;
+                }
+            }
+        });
+
+    };
 });
 
 var confirmDeleteGroupCtrl = function ($scope, $modalInstance, groupService, notifierService, group) {
