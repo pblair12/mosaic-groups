@@ -22,7 +22,7 @@ const GroupRow = ({ group, children }) => {
             <td>
                  <Row>
                     {group.leaders && group.leaders.map((leader, idx) => <Col md={12} key={idx}>{leader.firstName} {leader.lastName} </Col>)}
-                 </Row>    
+                 </Row>
             </td>
             <td>
                 {group.location}
@@ -36,7 +36,7 @@ const GroupRow = ({ group, children }) => {
             <td>
                 <Row>
 
-                    {group.topics.map(topic => <Col md={12} key={topic}> {topic} </Col>)}
+                    {group.topics.map((topic, idx) => <Col md={12} key={idx}> {topic} </Col>)}
 
                 </Row>
             </td>

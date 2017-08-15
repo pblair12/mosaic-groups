@@ -26,6 +26,7 @@ const getGroups = () => dispatch => {
             return dispatch(receiveGroups(response));
         });
 };
+
 const shouldFetchGroups = (state) => {
     const groups = state.groups;
     if (groups.isFetching) {
@@ -44,7 +45,6 @@ export const startNewSemester = (name) => (dispatch, getState) => {
         .send({ 'semesterName': name })
         .then(response => {
             toastr.success('Success', `Started New Semester: "${name}"`);
-            
         })
         .catch(err => {
             toastr.error('Error', `Could Not Start Semester "${name}"`);
@@ -74,10 +74,10 @@ export const addGroup = (group) => (dispatch, getState) => {
             dispatch(push('/'));
         })
         .catch(err => {
-            toastr.error('Error', `There was an error adding ${group.title}, Please send this error to the group coordinator:  ${err}`);
+            toastr.error('Error', `There was an error adding ${group.title}. Please send this error to the group coordinator:  ${err}`);
         });
-
 };
+
 export const deleteGroup = (group) => (dispatch, getState) => {
     dispatch({
         type: DELETE_GROUP,
@@ -107,6 +107,7 @@ export const updateGroup = (group) => (dispatch, getState) => {
             toastr.error('Error', `There was an error updating ${group.title}, Please send this error to the group coordinator:  ${err}`);
         });
 };
+
 export const joinGroup = ({ member, spouse }, groupId) => (dispatch, getState) => {
     dispatch({
         type: JOIN_GROUP
@@ -117,7 +118,6 @@ export const joinGroup = ({ member, spouse }, groupId) => (dispatch, getState) =
         spouse.status = 'PENDING';
         data.newMemberSpouse = spouse;
     }
-
 
     return request.post(`/api/groups/${groupId}/add-member`)
         .send(data)
