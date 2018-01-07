@@ -1,10 +1,10 @@
-var logger = require('./logger');
-var mongoose = require('mongoose');
-var userModel = require('../models/User');
-var groupModel = require('../models/Group');
-var semesterModel = require('../models/Semester');
-var settingsModel = require('../models/Settings');
-var config = require('./config');
+let logger = require('./logger');
+let mongoose = require('mongoose');
+let userModel = require('../models/User');
+let groupsModel = require('../models/Group'); //eslint-disable-line
+let semesterModel = require('../models/Semester');
+let settingsModel = require('../models/Settings');
+let config = require('./config');
 
 module.exports = function () {
     mongoose.Promise = Promise;
@@ -14,26 +14,26 @@ module.exports = function () {
         mongoose.connect(config.db.url);
     }
     else {
-        var mockgoose = require('mockgoose').Mockgoose;
+        let mockgoose = require('mockgoose').Mockgoose;
 
         mockgoose = new mockgoose(mongoose);
         mockgoose.prepareStorage().then(() => {
             mongoose.connect('mongodb://foobar/baz');
             mongoose.connection.on('connected', () => {
-                
+
                 //connection is open
             });
         });
 
     }
 
-    //setting own Promise library. See: http://mongoosejs.com/docs/promises.html    
+    //setting own Promise library. See: http://mongoosejs.com/docs/promises.html
 
-    logger.log('connecting to ' + config.env + ' mongo instance');
+    logger.log(`connecting to ${config.env} mongo instance`);
 
     logger.log('connected...');
 
-    var db = mongoose.connection;
+    let db = mongoose.connection;
     db.on('error',
         function (err) {
             logger.error('connection error: %s', err);

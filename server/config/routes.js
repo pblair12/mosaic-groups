@@ -5,27 +5,6 @@ var users = require('../controllers/usersController');
 var groups = require('../controllers/groupsController');
 var settings = require('../controllers/settingsController');
 
-
-// in production env, and if the proper headers are seen in the request, redirect to https
-let secureRedirect = function () {
-    return function (req, res, next) {
-        if (process.env.NODE_ENV == 'production') {
-            if (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "http") {
-                res.redirect('https://' + config.domain + ':' + config.https.port + req.originalUrl);
-            } else {
-                next();
-            }
-        } else {
-            res.setHeader('Strict-Transport-Security', 'max-age=8640000; includeSubDomains');
-            if (!req.secure) {
-                res.redirect('https://' + config.domain + ':' + config.https.port + req.originalUrl);
-            } else {
-                next();
-            }
-        }
-    }
-};
-
 //routes
 module.exports = function (app) {
 
