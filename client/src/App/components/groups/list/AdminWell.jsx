@@ -27,6 +27,7 @@ const AdminWell = ({ settings, dispatch }) => {
                 <Col md={12}>
                     <Button onClick={(e) => {
                         request.post(apiPath + '/api/groups/emailGroupReportToSelf')
+                            .withCredentials()
                             .then(res => {
                                 toastr.success('Success', 'Group Report email sent');
                             })
@@ -41,6 +42,7 @@ const AdminWell = ({ settings, dispatch }) => {
                 <Col md={12}>
                     <Button onClick={(e) => {
                         request.post(apiPath + '/api/groups/emailUniqueReportToSelf')
+                            .withCredentials()
                             .then(res => {
                                 toastr.success('Success', 'Unique Members Report email sent');
                             })

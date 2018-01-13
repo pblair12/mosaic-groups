@@ -19,6 +19,7 @@ export const receiveSettings = json => ({
 const fetchSettings = () => dispatch => {
     dispatch(requestSettings());
     return request.get(apiPath + '/api/settings')
+        .withCredentials()
         .then(response => dispatch(receiveSettings(response.body)));
 };
 
@@ -45,6 +46,7 @@ export const updateSettings = (key, value) => (dispatch, getState) => {
     });
 
     return request.post(apiPath + '/api/settings')
+        .withCredentials()
         .send(settings)
         .then(response => {
             toastr.success('Success', 'Your changes have been saved');

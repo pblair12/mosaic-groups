@@ -22,6 +22,7 @@ export const receiveUsers = response => ({
 const listUsers = () => dispatch => {
     dispatch(requestUsers());
     return request.get(apiPath + '/api/users')
+        .withCredentials()
         .then(response => {
             return dispatch(receiveUsers(response));
         });
@@ -44,6 +45,7 @@ export const addUser = (newUser) => (dispatch, getState) => {
     });
 
     return request.post(apiPath + '/api/users')
+        .withCredentials()
         .send(newUser)
         .then((r) => {
             if (!getState().identity._id ) {
@@ -66,6 +68,7 @@ export const updateUser = (user) => (dispatch, getState) => {
         user
     });
     return request.post(apiPath + `/api/users/${user._id}`)
+        .withCredentials()
         .send(user)
         .then(response => {
             toastr.success('Success', `You have successfully updated ${user.firstName} ${user.lastName}`);
@@ -82,6 +85,7 @@ export const deleteUser = (user) => (dispatch, getState) => {
         user: user
     });
     return request.delete(apiPath + `/api/users/${user._id}`)
+        .withCredentials()
         .then(response => {
             toastr.success('Success', `${user.firstName} ${user.lastName} has been deleted`);
         })

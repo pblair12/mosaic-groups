@@ -23,6 +23,7 @@ export const receiveGroups = response => ({
 const getGroups = () => dispatch => {
     dispatch(requestGroups());
     return request.get(apiPath + '/api/groups')
+        .withCredentials()
         .then(response => {
             return dispatch(receiveGroups(response));
         });
@@ -43,6 +44,7 @@ export const startNewSemester = (name) => (dispatch, getState) => {
 
     request.post(apiPath + '/api/groups/addSemester')
         .send({ 'semesterName': name })
+        .withCredentials()
         .then(response => {
             toastr.success('Success', `Started New Semester: "${name}"`);
 
@@ -73,6 +75,7 @@ export const addGroup = (group) => (dispatch, getState) => {
         group
     });
     return request.post(apiPath + '/api/groups')
+        .withCredentials()
         .send(group)
         .then(response => {
             toastr.success('Success', `You have successfully added ${group.title}`);
@@ -89,6 +92,7 @@ export const deleteGroup = (group) => (dispatch, getState) => {
         group
     });
     return request.delete(apiPath + `/api/groups/${group._id}`)
+        .withCredentials()
         .then(response => {
             toastr.success('Success', `${group.title} has been deleted`);
         })
@@ -103,6 +107,7 @@ export const updateGroup = (group) => (dispatch, getState) => {
         group
     });
     return request.post(apiPath + `/api/groups/${group._id}`)
+        .withCredentials()
         .send(group)
         .then(response => {
             toastr.success('Success', `You have successfully updated ${group.title}`);
@@ -125,6 +130,7 @@ export const joinGroup = ({ member, spouse }, groupId) => (dispatch, getState) =
     }
 
     return request.post(apiPath + `/api/groups/${groupId}/add-member`)
+        .withCredentials()
         .send(data)
         .then(response => {
             toastr.success('Success', `You're request to join this group has been submitted. 
