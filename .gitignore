@@ -11,3 +11,6 @@ client/build/
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+dev.cert
+dev.csr
+dev.key

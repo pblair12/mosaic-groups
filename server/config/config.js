@@ -1,92 +1,76 @@
-/* global process */
-/**
- * Configure the application.
- *
- * You can set additional heroku environmental variables like this:
- *   $ heroku config:set GITHUB_USERNAME=joesmith
- *   Adding config vars and restarting myapp... done, v12
- *   GITHUB_USERNAME: joesmith
- *
- *   $ heroku config
- *   GITHUB_USERNAME: joesmith
- *   OTHER_VAR:       production
- */
-var path = require('path');
-var rootPath = path.normalize(__dirname + '/../../client/');
+import path from 'path';
+import fs from 'fs';
+import { execSync }from 'child_process';
+import logger from './logger';
+import * as constants from './constants';
 
-var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-var corsOrigins = [];
-if (env === 'production' && process.env.MOSAIC_ORIGINS) {
+const rootPath = path.normalize(__dirname + '/../../client/');
+
+let env = process.env.NODE_ENV = process.env.NODE_ENV || constants.DEV;
+logger.log(`Current Environment Type: ${env}`);
+
+let corsOrigins = [];
+if (env === constants.PROD && process.env.MOSAIC_ORIGINS) {
     corsOrigins = process.env.MOSAIC_ORIGINS.split(';');
 }
 
-// we need to default to the hosted dev DB is there is a username and password vars configured
-var devDBConnection;
-if (typeof (process.env.MOSAICGROUPS_USERNAME) != 'undefined' && typeof (process.env.MOSAICGROUPS_PASSWORD) != 'undefined') {
-    devDBConnection = 'mongodb://' + process.env.MOSAICGROUPS_USERNAME + ':' + process.env.MOSAICGROUPS_PASSWORD + '@ds061288.mlab.com:61288/mosaicgroups-dev';
-} else {
-    if (typeof (process.env.DEV_HOST) != 'undefined') {
-        devDBConnection = 'mongodb://' + process.env.DEV_HOST + ':27017/mosaicgroups';
-    }
-    else {
-        devDBConnection = 'mongodb://localhost:27017/mosaicgroups';
-    }
+if (env === constants.DEV) {
+    if (!fs.existsSync(constants.DEV_KEY_PATH) || !fs.existsSync(constants.DEV_CERT_PATH)) {
+        logger.log('Creating Development HTTPS Key and Certificate...');
+        const command = `
+            openssl genrsa -out ${constants.DEV_KEY_PATH} 1024 &&
+            openssl req -new -key ${constants.DEV_KEY_PATH} -out ${constants.DEV_CSR_PATH} -subj ${constants.DEV_CERT_SUBJ}
+            openssl x509 -req -in ${constants.DEV_CSR_PATH} -signkey ${constants.DEV_KEY_PATH} -out ${constants.DEV_CERT_PATH}`;
+        try {
+            execSync(command, {stdio: ['ignore', 'ignore', 'ignore']});
+        } catch (error) {
+            logger.error('Failed to Generate HTTPS Key and Certificate.');
+            logger.error(error.message);
+        }
+    } else { logger.log('Located Development HTTPS Key and Certificate');}
 }
+  
 const envs = {
     development: {
         env: env,
-        domain: 'localhost',
+        domain: constants.DEV_DOMAIN,
         db: {
-            url: devDBConnection,
+            url: constants.DEV_DB_CONN,
             debugMode: true
         },
         root: rootPath,
-        http: {
-            port: process.env.PORT || 3030
-        },
+        http: { port: 3030 },
         https: {
-            port: process.env.SSLPORT || 3031,
+            port: 3031,
             options: {
-                //key: fs.readFileSync('/data/certs/server.key'),
-                //cert: fs.readFileSync('/data/certs/server.crt')
+                key: fs.readFileSync(constants.DEV_KEY_PATH),
+                cert: fs.readFileSync(constants.DEV_CERT_PATH)
             }
         },
         scheduler: {
             enabledGroupReport: false,
             enabledDistinctMembersReport: false
         },
-        emailer: {
-            password: process.env.MOSAIC_GROUPS_EMAIL_PASSWORD
-        },
+        emailer: { password: process.env.MOSAIC_GROUPS_EMAIL_PASSWORD },
         origins: corsOrigins
     },
     production: {
         env: env,
-        domain: 'www.mosaicgroups.org',
+        domain: constants.PROD_DOMAIN,
         db: {
-            url: 'mongodb://' + process.env.MOSAICGROUPS_USERNAME + ':' + process.env.MOSAICGROUPS_PASSWORD + '@ds027489.mongolab.com:27489/mosaicgroups',
+            url: constants.PROD_DB_CONN,
             debugMode: false
         },
         root: rootPath,
-        http: {
-            port: process.env.PORT || 80
-        },
-        https: {
-            port: process.env.SSLPORT || 443,
-            options: {
-                //key: fs.readFileSync('/data/certs/server.key'),
-                //cert: fs.readFileSync('/data/certs/server.crt')
-            }
-        },
+        http: { port: process.env.PORT || 80 },
+        https: { port: process.env.SSLPORT || 443 },
         scheduler: {
             enabledGroupReport: false,
             enabledDistinctMembersReport: false,
             hour: 11,
             minute: 59
         },
-        emailer: {
-            password: process.env.MOSAIC_GROUPS_EMAIL_PASSWORD
-        },
+        emailer: { password: process.env.MOSAIC_GROUPS_EMAIL_PASSWORD },
         origins: corsOrigins
     }
 };

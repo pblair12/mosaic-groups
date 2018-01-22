@@ -29,6 +29,6 @@ const userCanEditGroup = (group, identity) => {
     return canEditGroup;
 };
 
-const apiPath = process.env.NODE_ENV === 'production' ? 'https://api.mosaicgroups.org' : '';
+const apiPath = process.env.NODE_ENV === 'production' ? 'https://api.mosaicgroups.org' : 'https://localhost:3031';
 
 export { groupDisabled, groupIsFull, userIsLeaderOfGroup, userCanEditGroup, apiPath };

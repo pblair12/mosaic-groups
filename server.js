@@ -1,43 +1,40 @@
-var tracer = require('tracer');
-var logger = require('./server/config/logger');
-var express = require('express');
-var https = require('https');
-var http = require('http');
-var config = require('./server/config/config');
+import tracer from 'tracer';
+import logger from './server/config/logger';
+import express from 'express';
+import https from 'https';
+import http from 'http';
+import config from './server/config/config';
+import * as constants from './server/config/constants';
 
+let app = express();
 
-var app = express();
-
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== constants.test) {
     tracer.setLevel('log');
 } else {
     tracer.setLevel('warn');
 }
-logger.log('configuring express');
+
+logger.log('Configuring Express');
 require('./server/config/express')(app);
 
-logger.log('configuring mongoose');
+logger.log('Configuring Mongoose');
 require('./server/config/mongoose')();
 
-logger.log('configuring passport');
+logger.log('Configuring Passport');
 require('./server/config/passport')();
 
-logger.log('configuring routes');
+logger.log('Configuring routes');
 require('./server/config/routes')(app);
 
-logger.log('configuring scheduler');
+logger.log('Configuring scheduler');
 require('./server/config/scheduler')();
 
-logger.log('environment: ' + config.env);
-
-logger.log('configuring listener for http on port: ' + config.http.port);
+logger.log(`Starting HTTP listener on port: ${config.http.port}`);
 http.createServer(app).listen(config.http.port);
 
-//if (config.env === 'development') {
-//  logger.log('configuring listener for https on port: ' + config.https.port);
-//  https.createServer(config.https.options, app).listen(config.https.port);
-//}
+if (config.env === constants.DEV) {
+    logger.log(`Starting HTTPS listener on port: ${config.https.port}`);
+    https.createServer(config.https.options, app).listen(config.https.port);
+}
 
-logger.log('Listening on port ' + config.http.port);
-
-module.exports = app;
+export default app;
